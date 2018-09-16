@@ -68,7 +68,7 @@ void executeCommand(char currentDirection) {
 char receiveCommand() {
   // Read the oldest byte in the serial buffer:
   char incomingByte = Serial.read();
-  
+
   // Is this a direction; 'f' 'b' 'l' 'r' 's'
   if (incomingByte == 'f') {
     Serial.println("Forwards");
@@ -118,36 +118,50 @@ void setupSensorPins() {
   Serial.println("Initialization complete");
 }
 
+void sendTriggerPulse(int sensorTrigPin) {
+  // Send the 10 usec trigger pulse
+  digitalWrite(sensorTrigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(sensorTrigPin, LOW);
+}
+
+void waitEchoPinHigh(unsigned long clockMax, int sensorEchoPin) {
+  // Wait for the echo pin to go high
+  while ((micros() < clockMax) && (digitalRead(sensorEchoPin) == LOW));
+}
+
+void waitEchoPinLow(unsigned long clockMax, int sensorEchoPin) {
+  // Read the sensor delay time by waiting for the echo pin to go low
+  while ((micros() < clockMax) && (digitalRead(sensorEchoPin) == HIGH));
+}
+
+float calculateDistance(unsigned long clockStart) {
+  return float(micros() - clockStart) / 58.0;
+}
+
 float getDistance() {
   // Local variables
   unsigned long clockStart;
   unsigned long clockMax;
   unsigned long timeMax = 60000;
   float distance;
-  
-  // Send the 10 usec trigger pulse
-  digitalWrite(sensorTrigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(sensorTrigPin, LOW);
-  
+    
+  sendTriggerPulse(sensorTrigPin);
+
   // Once triggered it take about 500 usec for the echo pin to go high
   // Set the max wait time
   clockMax = micros() + 1000;
 
-  // Wait for the echo pin to go high
-  while ((micros() < clockMax) && (digitalRead(sensorEchoPin) == LOW));
+  waitEchoPinHigh(clockMax, sensorEchoPin);
   
   // Initialise the echo timer
   clockStart = micros();
   clockMax = clockStart + timeMax;
 
-  // Read the sensor delay time by waiting for the echo pin to go low
-  while ((micros() < clockMax) && (digitalRead(sensorEchoPin) == HIGH));
+  waitEchoPinLow(clockMax, sensorEchoPin);
   
   // Calculate the distance in cm
-  distance = float(micros() - clockStart) / 58.0;
-  
-  return distance;
+  return calculateDistance(clockStart);
 }
 
 void setupRightMotorPins() {
