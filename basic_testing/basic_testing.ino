@@ -30,24 +30,24 @@ void setup(){
 // The loop() method runs over and over again
 // -------------------------------------------------------
 void loop(){
-  turnOnMotors();
+  enableMotors();
 
-  // See if there's incoming serial data:
-  if (Serial.available() > 0){
-    currentDirection = getDirectionCommand();
+  if (Serial.available() > 0) {
+    // See if there's incoming serial data:
+    currentDirection = receiveCommand();
   }
-
-  if (getDistance() <= 20) {
+  
+  if (getDistance() <= 20 && currentDirection == 'f') {
     currentDirection = 's';
   }
 
-  executeDirectionCommand(currentDirection);
+  executeCommand(currentDirection);
 
   // Small delay for a character to arrive
   delay(10);
 }
 
-void executeDirectionCommand(char currentDirection) {
+void executeCommand(char currentDirection) {
   if (currentDirection == 'f') { 
     travelForward();
   }
@@ -65,9 +65,10 @@ void executeDirectionCommand(char currentDirection) {
   }   
 }
 
-char getDirectionCommand() {
+char receiveCommand() {
   // Read the oldest byte in the serial buffer:
   char incomingByte = Serial.read();
+  
   // Is this a direction; 'f' 'b' 'l' 'r' 's'
   if (incomingByte == 'f') {
     Serial.println("Forwards");
@@ -89,6 +90,7 @@ char getDirectionCommand() {
     Serial.println("Stop");
     currentDirection = 's';
   }
+
   return incomingByte;
 }
 
@@ -187,30 +189,30 @@ void setupMotorPins() {
 }
 
 
-void turnOnMotorA() {
+void enableLeftMotors() {
   digitalWrite(leftEnable, HIGH);
 }
 
-void turnOnMotorB() {
+void enableRightMotors() {
   digitalWrite(rightEnable, HIGH);
 }
 
-void turnOffMotorA() {
+void disableLeftMotors() {
   digitalWrite(leftEnable, LOW);
 }
 
-void turnOffMotorB() {
+void disableRightMotors() {
   digitalWrite(rightEnable, LOW);
 }
 
-void turnOnMotors() {
-  turnOnMotorA();
-  turnOnMotorB();
+void enableMotors() {
+  enableLeftMotors();
+  enableRightMotors();
 }
 
-void turnOffMotors() {
-  turnOffMotorA();
-  turnOffMotorB();
+void disableMotors() {
+  disableLeftMotors();
+  disableRightMotors();
 }
 
 void leftSideForward() {
@@ -267,4 +269,3 @@ void brake() {
   leftSideBrake();
   rightSideBrake();
 }
-
