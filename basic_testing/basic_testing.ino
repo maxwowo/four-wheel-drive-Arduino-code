@@ -15,38 +15,47 @@ int sensorEchoPin = 13;
 char currentDirection = 's';
 
 // -------------------------------------------------------
-// The setup() method runs once, when the sketch starts
+// The setup() function runs once, when the sketch starts
 // -------------------------------------------------------
 void setup(){ 
   // Initialize the serial communications
   Serial.begin(9600);
 
+  // Set up the pins for the ultrasonic sensor 
   setupSensorPins();
 
+  // Set up the pins for the motors 
   setupMotorPins();
 }
 
 // -------------------------------------------------------
-// The loop() method runs over and over again
+// The loop() function runs over and over again
 // -------------------------------------------------------
 void loop(){
   enableMotors();
 
+  // See if there's incoming serial data
   if (Serial.available() > 0) {
-    // See if there's incoming serial data:
     currentDirection = receiveCommand();
   }
-  
+
+  // If there is obstacle in front and robot is currently travelling forward 
   if (getDistance() <= 20 && currentDirection == 'f') {
+    // Stop 
     currentDirection = 's';
   }
 
+  // Execute any commands entered 
   executeCommand(currentDirection);
 
   // Small delay for a character to arrive
   delay(10);
 }
 
+// -------------------------------------------------------
+// The executeCommand() function executes any valid commands 
+// entered 
+// -------------------------------------------------------
 void executeCommand(char currentDirection) {
   if (currentDirection == 'f') { 
     travelForward();
@@ -65,6 +74,10 @@ void executeCommand(char currentDirection) {
   }   
 }
 
+// -------------------------------------------------------
+// The receiveCommand() function checks and returns any 
+// valid serial command 
+// -------------------------------------------------------
 char receiveCommand() {
   // Read the oldest byte in the serial buffer:
   char incomingByte = Serial.read();
@@ -94,6 +107,10 @@ char receiveCommand() {
   return incomingByte;
 }
 
+// -------------------------------------------------------
+// The setupSensorPins() function sets up the pins for the 
+// ultrasonic sensor 
+// -------------------------------------------------------
 void setupSensorPins() {
   // Initialize the serial communications
   Serial.begin(9600); 
@@ -118,6 +135,10 @@ void setupSensorPins() {
   Serial.println("Initialization complete");
 }
 
+// -------------------------------------------------------
+// The sendTriggerPulse() function sends a trigger pulse 
+// using the ultrasonic sensor 
+// -------------------------------------------------------
 void sendTriggerPulse(int sensorTrigPin) {
   // Send the 10 usec trigger pulse
   digitalWrite(sensorTrigPin, HIGH);
@@ -125,20 +146,37 @@ void sendTriggerPulse(int sensorTrigPin) {
   digitalWrite(sensorTrigPin, LOW);
 }
 
+// -------------------------------------------------------
+// The waitEchoPinHigh() function waits for the echo pin
+// to go high 
+// -------------------------------------------------------
 void waitEchoPinHigh(unsigned long clockMax, int sensorEchoPin) {
   // Wait for the echo pin to go high
   while ((micros() < clockMax) && (digitalRead(sensorEchoPin) == LOW));
 }
 
+// -------------------------------------------------------
+// The waitEchoPinLow() function waits for the echo pin to 
+// go low 
+// -------------------------------------------------------
 void waitEchoPinLow(unsigned long clockMax, int sensorEchoPin) {
   // Read the sensor delay time by waiting for the echo pin to go low
   while ((micros() < clockMax) && (digitalRead(sensorEchoPin) == HIGH));
 }
 
+// -------------------------------------------------------
+// The calculateDistance() function calculates and 
+// returns the distance between the ultrasonic sensor and 
+// any solid object in front using maths 
+// -------------------------------------------------------
 float calculateDistance(unsigned long clockStart) {
   return float(micros() - clockStart) / 58.0;
 }
 
+// -------------------------------------------------------
+// The getDistance() function returns the distance between 
+// the ultrasonic sensor  and any solid object in front 
+// -------------------------------------------------------
 float getDistance() {
   // Local variables
   unsigned long clockStart;
@@ -164,6 +202,10 @@ float getDistance() {
   return calculateDistance(clockStart);
 }
 
+// -------------------------------------------------------
+// The setupRightMotorPins() function sets up the motors 
+// on the right side of the robot 
+// -------------------------------------------------------
 void setupRightMotorPins() {
   pinMode(rightEnable, OUTPUT);
   pinMode(rightLogicPinOne, OUTPUT);
@@ -176,6 +218,10 @@ void setupRightMotorPins() {
   Serial.println(rightLogicPinTwo);
 }
 
+// -------------------------------------------------------
+// The setupLeftMotorPins() function sets up the motors 
+// on the left side of the robot 
+// -------------------------------------------------------
 void setupLeftMotorPins() {
   pinMode(leftEnable, OUTPUT);
   pinMode(leftLogicPinOne, OUTPUT);
@@ -188,6 +234,10 @@ void setupLeftMotorPins() {
   Serial.println(leftLogicPin2);
 }
 
+// -------------------------------------------------------
+// The setupMotorPins() function sets up the motors on 
+// both sides of the robot 
+// -------------------------------------------------------
 void setupMotorPins() {
   // Print the program details
   Serial.println("-------------------------------------");
@@ -202,83 +252,141 @@ void setupMotorPins() {
   Serial.println("Initialization complete");
 }
 
-
+// -------------------------------------------------------
+// The enableLeftMotors() function 
+// -------------------------------------------------------
 void enableLeftMotors() {
   digitalWrite(leftEnable, HIGH);
 }
 
+// -------------------------------------------------------
+// The enableRightMotors() function 
+// -------------------------------------------------------
 void enableRightMotors() {
   digitalWrite(rightEnable, HIGH);
 }
 
+// -------------------------------------------------------
+// The disableLeftMotors() function 
+// -------------------------------------------------------
 void disableLeftMotors() {
   digitalWrite(leftEnable, LOW);
 }
 
+// -------------------------------------------------------
+// The disableRightMotors() function 
+// -------------------------------------------------------
 void disableRightMotors() {
   digitalWrite(rightEnable, LOW);
 }
 
+// -------------------------------------------------------
+// The enableMotors() function 
+// -------------------------------------------------------
 void enableMotors() {
   enableLeftMotors();
   enableRightMotors();
 }
 
+// -------------------------------------------------------
+// The disableMotors() function 
+// -------------------------------------------------------
 void disableMotors() {
   disableLeftMotors();
   disableRightMotors();
 }
 
+// -------------------------------------------------------
+// The leftSideForward() function drives the motors on the 
+// left side of the robot forwards
+// -------------------------------------------------------
 void leftSideForward() {
   digitalWrite(leftLogicPinOne, HIGH);
   digitalWrite(leftLogicPin2, LOW);
 }
 
+// -------------------------------------------------------
+// The rightSideForward() function drives the motors on the
+// right side of the robot forwards
+// -------------------------------------------------------
 void rightSideForward() {
   digitalWrite(rightLogicPinOne, HIGH);
   digitalWrite(rightLogicPinTwo, LOW);
 }
 
+// -------------------------------------------------------
+// The leftSideBackward() function drives the motors on the 
+// left side of the robot backwards
+// -------------------------------------------------------
 void leftSideBackward(){
   digitalWrite(leftLogicPinOne, LOW);
   digitalWrite(leftLogicPin2, HIGH);
 }
 
+// -------------------------------------------------------
+// The rightSideBackward() function drives the motors on 
+// the right side of the robot backwards
+// -------------------------------------------------------
 void rightSideBackward() {
   digitalWrite(rightLogicPinOne, LOW);
   digitalWrite(rightLogicPinTwo, HIGH);
 }
 
+// -------------------------------------------------------
+// The rightSideBrake() function applies brake to the 
+// motors on the right side of the robot 
+// -------------------------------------------------------
 void rightSideBrake() {
   digitalWrite(rightLogicPinOne, HIGH);
   digitalWrite(rightLogicPinTwo, HIGH);
 }
 
+// -------------------------------------------------------
+// The leftSideBrake() function applies brake to the 
+// motors on the left side of the robot 
+// -------------------------------------------------------
 void leftSideBrake() {
   digitalWrite(leftLogicPinOne, HIGH);
   digitalWrite(leftLogicPin2, HIGH);
 }
 
+// -------------------------------------------------------
+// The travelForward() function makes the robot go 
+// forwards
+// -------------------------------------------------------
 void travelForward() {
   leftSideForward();
   rightSideForward();
 }
 
+// -------------------------------------------------------
+// The travelBackward() function makes the robot go 
+// backwards 
+// -------------------------------------------------------
 void travelBackward() {
   leftSideBackward();
   rightSideBackward();
 }
 
+// -------------------------------------------------------
+// The turnLeft() function makes the robot turn left 
+// -------------------------------------------------------
 void turnLeft() {
   leftSideBackward();
   rightSideForward();
 }
 
+// -------------------------------------------------------
+// The turnRight() function makes the robot turn right 
+// -------------------------------------------------------
 void turnRight() {
   rightSideBackward();
   leftSideForward();
 }
 
+// -------------------------------------------------------
+// The brake() function stops the robot 
+// -------------------------------------------------------
 void brake() {
   leftSideBrake();
   rightSideBrake();
