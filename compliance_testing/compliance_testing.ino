@@ -36,6 +36,7 @@ void setup(){
 // -------------------------------------------------------
 void loop(){
   setMotorSpeed(pwmDutyCycle);
+  setMotorDirection(currentDirection);
 
   // Wait for a command from the keyboard
   command = receiveCommand(); 
@@ -46,14 +47,23 @@ void loop(){
 
   currentDirection = checkObstacle(currentDirection);
   
-  setMotorDirection(currentDirection);
-  
   // Small delay for a character to arrive
   delay(10);
 }
 
+// -------------------------------------------------------
+// The checkObstacle function checks to see if there is 
+// any obstacle in front of the robot
+// 
+// If there is an obstacle, s is returned to stop the 
+// robot 
+// -------------------------------------------------------
 char checkObstacle(char currentDirection) {
+  // If there is an obstacle in front of the robot that is within 
+  // 20 centimeters to the ultrasonic sensor and the robot is 
+  // currently moving forward 
   if (getDistance() <= 20 && currentDirection == 'f') {
+    // Change the current direction to be stopped 
     currentDirection = 's';
   }
 
