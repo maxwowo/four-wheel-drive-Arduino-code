@@ -13,6 +13,8 @@ int sensorTrigPin = 12;
 int sensorEchoPin = 13;
 
 char currentDirection = 's';
+char command = 0;
+int pwmDutyCycle = 128;
 
 // -------------------------------------------------------
 // The setup() function runs once, when the sketch starts
@@ -32,31 +34,111 @@ void setup(){
 // The loop() function runs over and over again
 // -------------------------------------------------------
 void loop(){
-  enableMotors();
+  setMotorSpeed(pwmDutyCycle);
 
-  // See if there's incoming serial data
-  if (Serial.available() > 0) {
-    currentDirection = receiveCommand();
-  }
+  // Wait for a command from the keyboard
+  command = receiveCommand(); 
 
-  // If there is obstacle in front and robot is currently travelling forward 
+  // Update the direction of the robot
+  currentDirection = updateDirection(command, currentDirection);
+  pwmDutyCycle = updateSpeed(command, pwmDutyCycle);
+
+  currentDirection = checkObstacle(currentDirection);
+  
+  setMotorDirection(currentDirection);
+  
+  // Small delay for a character to arrive
+  delay(10);
+}
+
+char checkObstacle(char currentDirection) {
   if (getDistance() <= 20 && currentDirection == 'f') {
-    // Stop 
     currentDirection = 's';
   }
 
-  // Execute any commands entered 
-  executeCommand(currentDirection);
+  return currentDirection;
+}
 
-  // Small delay for a character to arrive
-  delay(10);
+// -------------------------------------------------------
+// Function: Receive Byte
+// -------------------------------------------------------
+char receiveCommand(){
+  char incomingByte = 0;
+
+  // See if there's incoming serial data:
+  if (Serial.available() > 0) {
+
+    // Read the oldest byte in the serial buffer:
+    incomingByte = Serial.read();
+  }
+
+  return incomingByte;
+}
+
+// -------------------------------------------------------
+// Function: Update Direction
+// -------------------------------------------------------
+char updateDirection(char command, char currentDirection){
+  // Is this a direction; 'f' 'b' 'l' 'r' 's'
+  if (command == 'f') {
+    Serial.println("Forwards");
+    currentDirection = 'f';
+  }
+  else if (command == 'b') {
+    Serial.println("Backwards");
+    currentDirection = 'b';
+  }
+  else if (command == 'l') {
+    Serial.println("Turn Left");
+    currentDirection = 'l';
+  }
+  else if (command == 'r') {
+    Serial.println("Turn Right");
+    currentDirection = 'r';
+  }
+  else if (command == 's') {
+    Serial.println("Stop");
+    currentDirection = 's';
+  }
+
+  return currentDirection;
+}
+
+// -------------------------------------------------------
+// Function: Update Speed
+// -------------------------------------------------------
+int updateSpeed(char command, int pwmDutyCycle){
+  
+  // Is this a motor speed 0 - 4
+  if (command == '0') {
+    Serial.println("Speed = 0%");
+    pwmDutyCycle = 0;
+  }
+  else if (command == '1') {
+    Serial.println("Speed = 25%");
+    pwmDutyCycle = 64;
+  }
+  else if (command == '2') {
+    Serial.println("Speed = 50%");
+    pwmDutyCycle = 128;
+  }
+  else if (command == '3') {
+    Serial.println("Speed = 75%");
+    pwmDutyCycle = 192;
+  }
+  else if (command == '4') {
+    Serial.println("Speed = 100%");
+    pwmDutyCycle = 255;
+  }
+
+  return pwmDutyCycle;
 }
 
 // -------------------------------------------------------
 // The executeCommand() function executes any valid commands 
 // entered 
 // -------------------------------------------------------
-void executeCommand(char currentDirection) {
+void setMotorDirection(char currentDirection) {
   if (currentDirection == 'f') { 
     travelForward();
   }
@@ -74,37 +156,9 @@ void executeCommand(char currentDirection) {
   }   
 }
 
-// -------------------------------------------------------
-// The receiveCommand() function checks and returns any 
-// valid serial command 
-// -------------------------------------------------------
-char receiveCommand() {
-  // Read the oldest byte in the serial buffer:
-  char incomingByte = Serial.read();
-
-  // Is this a direction; 'f' 'b' 'l' 'r' 's'
-  if (incomingByte == 'f') {
-    Serial.println("Forwards");
-    currentDirection = 'f';
-  }
-  else if (incomingByte == 'b') {
-    Serial.println("Backwards");
-    currentDirection = 'b';
-  }
-  else if (incomingByte == 'l') {
-    Serial.println("Turn Left");
-    currentDirection = 'l';
-  }
-  else if (incomingByte == 'r') {
-    Serial.println("Turn Right");
-    currentDirection = 'r';
-  }
-  else if (incomingByte == 's') {
-    Serial.println("Stop");
-    currentDirection = 's';
-  }
-
-  return incomingByte;
+void setMotorSpeed(int pwmDutyCycle) {
+  analogWrite(leftEnable, pwmDutyCycle);
+  analogWrite(rightEnable, pwmDutyCycle);
 }
 
 // -------------------------------------------------------
