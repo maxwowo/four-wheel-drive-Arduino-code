@@ -3,7 +3,7 @@
 // -------------------------------------------------------
 int leftEnable = 10;
 int leftLogicPinOne = 9;
-int leftLogicPin2 = 8;
+int leftLogicPinTwo = 8;
 
 int rightEnable = 5;
 int rightLogicPinOne = 7;
@@ -12,12 +12,13 @@ int rightLogicPinTwo = 6;
 int sensorTrigPin = 12;
 int sensorEchoPin = 13;
 
-char currentDirection = 's';
 char command = 0;
+
 int pwmDutyCycle = 128;
+char currentDirection = 's';
 
 // -------------------------------------------------------
-// The setup() function runs once, when the sketch starts
+// The setup function runs once, when the sketch starts
 // -------------------------------------------------------
 void setup(){ 
   // Initialize the serial communications
@@ -31,7 +32,7 @@ void setup(){
 }
 
 // -------------------------------------------------------
-// The loop() function runs over and over again
+// The loop function runs over and over again
 // -------------------------------------------------------
 void loop(){
   setMotorSpeed(pwmDutyCycle);
@@ -39,7 +40,7 @@ void loop(){
   // Wait for a command from the keyboard
   command = receiveCommand(); 
 
-  // Update the direction of the robot
+  // Update the direction and speed of the robot
   currentDirection = updateDirection(command, currentDirection);
   pwmDutyCycle = updateSpeed(command, pwmDutyCycle);
 
@@ -60,7 +61,8 @@ char checkObstacle(char currentDirection) {
 }
 
 // -------------------------------------------------------
-// Function: Receive Byte
+// The receiveCommand function returns the oldest byte 
+// in the serial buffer if there is any
 // -------------------------------------------------------
 char receiveCommand(){
   char incomingByte = 0;
@@ -76,7 +78,8 @@ char receiveCommand(){
 }
 
 // -------------------------------------------------------
-// Function: Update Direction
+// The updateDirection function updates the travel 
+// direction of the robot 
 // -------------------------------------------------------
 char updateDirection(char command, char currentDirection){
   // Is this a direction; 'f' 'b' 'l' 'r' 's'
@@ -105,7 +108,8 @@ char updateDirection(char command, char currentDirection){
 }
 
 // -------------------------------------------------------
-// Function: Update Speed
+// The updateSpeed function updates the speed of the 
+// robot 
 // -------------------------------------------------------
 int updateSpeed(char command, int pwmDutyCycle){
   
@@ -135,10 +139,12 @@ int updateSpeed(char command, int pwmDutyCycle){
 }
 
 // -------------------------------------------------------
-// The executeCommand() function executes any valid commands 
-// entered 
+// The executeCommand subroutine executes any valid 
+// commands entered 
 // -------------------------------------------------------
 void setMotorDirection(char currentDirection) {
+
+  // Check which direction is entered in the serial buffer 
   if (currentDirection == 'f') { 
     travelForward();
   }
@@ -156,13 +162,17 @@ void setMotorDirection(char currentDirection) {
   }   
 }
 
+// -------------------------------------------------------
+// The setMotorSpeed subroutine sets the speed of the 
+// left and right motors 
+// -------------------------------------------------------
 void setMotorSpeed(int pwmDutyCycle) {
   analogWrite(leftEnable, pwmDutyCycle);
   analogWrite(rightEnable, pwmDutyCycle);
 }
 
 // -------------------------------------------------------
-// The setupSensorPins() function sets up the pins for the 
+// The setupSensorPins subroutine sets up the pins for the 
 // ultrasonic sensor 
 // -------------------------------------------------------
 void setupSensorPins() {
@@ -190,7 +200,7 @@ void setupSensorPins() {
 }
 
 // -------------------------------------------------------
-// The sendTriggerPulse() function sends a trigger pulse 
+// The sendTriggerPulse subroutine sends a trigger pulse 
 // using the ultrasonic sensor 
 // -------------------------------------------------------
 void sendTriggerPulse(int sensorTrigPin) {
@@ -201,7 +211,7 @@ void sendTriggerPulse(int sensorTrigPin) {
 }
 
 // -------------------------------------------------------
-// The waitEchoPinHigh() function waits for the echo pin
+// The waitEchoPinHigh subroutine waits for the echo pin
 // to go high 
 // -------------------------------------------------------
 void waitEchoPinHigh(unsigned long clockMax, int sensorEchoPin) {
@@ -210,7 +220,7 @@ void waitEchoPinHigh(unsigned long clockMax, int sensorEchoPin) {
 }
 
 // -------------------------------------------------------
-// The waitEchoPinLow() function waits for the echo pin to 
+// The waitEchoPinLow subroutine waits for the echo pin to 
 // go low 
 // -------------------------------------------------------
 void waitEchoPinLow(unsigned long clockMax, int sensorEchoPin) {
@@ -219,7 +229,7 @@ void waitEchoPinLow(unsigned long clockMax, int sensorEchoPin) {
 }
 
 // -------------------------------------------------------
-// The calculateDistance() function calculates and 
+// The calculateDistance function calculates and 
 // returns the distance between the ultrasonic sensor and 
 // any solid object in front using maths 
 // -------------------------------------------------------
@@ -228,7 +238,7 @@ float calculateDistance(unsigned long clockStart) {
 }
 
 // -------------------------------------------------------
-// The getDistance() function returns the distance between 
+// The getDistance function returns the distance between 
 // the ultrasonic sensor  and any solid object in front 
 // -------------------------------------------------------
 float getDistance() {
@@ -260,14 +270,17 @@ float getDistance() {
 }
 
 // -------------------------------------------------------
-// The setupRightMotorPins() function sets up the motors 
+// The setupRightMotorPins subroutine sets up the motors 
 // on the right side of the robot 
 // -------------------------------------------------------
 void setupRightMotorPins() {
+
+  // Set up the right motor pins
   pinMode(rightEnable, OUTPUT);
   pinMode(rightLogicPinOne, OUTPUT);
   pinMode(rightLogicPinTwo, OUTPUT);
 
+  // Print the right motor pins for wiring purposes 
   Serial.print("Right Motor Pin 1 = ");
   Serial.println(rightLogicPinOne);
     
@@ -276,23 +289,26 @@ void setupRightMotorPins() {
 }
 
 // -------------------------------------------------------
-// The setupLeftMotorPins() function sets up the motors 
+// The setupLeftMotorPins subroutine sets up the motors 
 // on the left side of the robot 
 // -------------------------------------------------------
 void setupLeftMotorPins() {
+
+  // Set up the left motor pins 
   pinMode(leftEnable, OUTPUT);
   pinMode(leftLogicPinOne, OUTPUT);
-  pinMode(leftLogicPin2, OUTPUT);
+  pinMode(leftLogicPinTwo, OUTPUT);
 
+  // Print the left motor pins for wiring purposes 
   Serial.print("Left Motor Pin 1 = ");
   Serial.println(leftLogicPinOne);
 
   Serial.print("Left Motor Pin 2 = ");
-  Serial.println(leftLogicPin2);
+  Serial.println(leftLogicPinTwo);
 }
 
 // -------------------------------------------------------
-// The setupMotorPins() function sets up the motors on 
+// The setupMotorPins subroutine sets up the motors on 
 // both sides of the robot 
 // -------------------------------------------------------
 void setupMotorPins() {
@@ -310,66 +326,17 @@ void setupMotorPins() {
 }
 
 // -------------------------------------------------------
-// The enableLeftMotors() function enables the left motors 
-// -------------------------------------------------------
-void enableLeftMotors() {
-  digitalWrite(leftEnable, HIGH);
-}
-
-// -------------------------------------------------------
-// The enableRightMotors() function enables the right 
-// motors 
-// -------------------------------------------------------
-void enableRightMotors() {
-  digitalWrite(rightEnable, HIGH);
-}
-
-// -------------------------------------------------------
-// The disableLeftMotors() function disables the left 
-// motors 
-// -------------------------------------------------------
-void disableLeftMotors() {
-  digitalWrite(leftEnable, LOW);
-}
-
-// -------------------------------------------------------
-// The disableRightMotors() function disables the right 
-// motors 
-// -------------------------------------------------------
-void disableRightMotors() {
-  digitalWrite(rightEnable, LOW);
-}
-
-// -------------------------------------------------------
-// The enableMotors() function enables both the left and 
-// right motors 
-// -------------------------------------------------------
-void enableMotors() {
-  enableLeftMotors();
-  enableRightMotors();
-}
-
-// -------------------------------------------------------
-// The disableMotors() function disables both the left and 
-// right motors 
-// -------------------------------------------------------
-void disableMotors() {
-  disableLeftMotors();
-  disableRightMotors();
-}
-
-// -------------------------------------------------------
-// The leftSideForward() function drives the motors on the 
+// The leftSideForward subroutine drives the motors on the 
 // left side of the robot forwards
 // -------------------------------------------------------
 void leftSideForward() {
   digitalWrite(leftLogicPinOne, HIGH);
-  digitalWrite(leftLogicPin2, LOW);
+  digitalWrite(leftLogicPinTwo, LOW);
 }
 
 // -------------------------------------------------------
-// The rightSideForward() function drives the motors on the
-// right side of the robot forwards
+// The rightSideForward subroutine drives the motors on 
+// the right side of the robot forwards
 // -------------------------------------------------------
 void rightSideForward() {
   digitalWrite(rightLogicPinOne, HIGH);
@@ -377,16 +344,16 @@ void rightSideForward() {
 }
 
 // -------------------------------------------------------
-// The leftSideBackward() function drives the motors on the 
-// left side of the robot backwards
+// The leftSideBackward subroutine drives the motors on
+// the left side of the robot backwards
 // -------------------------------------------------------
 void leftSideBackward(){
   digitalWrite(leftLogicPinOne, LOW);
-  digitalWrite(leftLogicPin2, HIGH);
+  digitalWrite(leftLogicPinTwo, HIGH);
 }
 
 // -------------------------------------------------------
-// The rightSideBackward() function drives the motors on 
+// The rightSideBackward subroutine drives the motors on 
 // the right side of the robot backwards
 // -------------------------------------------------------
 void rightSideBackward() {
@@ -395,7 +362,7 @@ void rightSideBackward() {
 }
 
 // -------------------------------------------------------
-// The rightSideBrake() function applies brake to the 
+// The rightSideBrake subroutine applies brake to the 
 // motors on the right side of the robot 
 // -------------------------------------------------------
 void rightSideBrake() {
@@ -404,16 +371,16 @@ void rightSideBrake() {
 }
 
 // -------------------------------------------------------
-// The leftSideBrake() function applies brake to the 
+// The leftSideBrake subroutine applies brake to the 
 // motors on the left side of the robot 
 // -------------------------------------------------------
 void leftSideBrake() {
   digitalWrite(leftLogicPinOne, HIGH);
-  digitalWrite(leftLogicPin2, HIGH);
+  digitalWrite(leftLogicPinTwo, HIGH);
 }
 
 // -------------------------------------------------------
-// The travelForward() function makes the robot go 
+// The travelForward subroutine makes the robot go 
 // forwards
 // -------------------------------------------------------
 void travelForward() {
@@ -422,7 +389,7 @@ void travelForward() {
 }
 
 // -------------------------------------------------------
-// The travelBackward() function makes the robot go 
+// The travelBackward subroutine makes the robot go 
 // backwards 
 // -------------------------------------------------------
 void travelBackward() {
@@ -431,7 +398,7 @@ void travelBackward() {
 }
 
 // -------------------------------------------------------
-// The turnLeft() function makes the robot turn left 
+// The turnLeft subroutine makes the robot turn left 
 // -------------------------------------------------------
 void turnLeft() {
   leftSideBackward();
@@ -439,7 +406,7 @@ void turnLeft() {
 }
 
 // -------------------------------------------------------
-// The turnRight() function makes the robot turn right 
+// The turnRight subroutine makes the robot turn right 
 // -------------------------------------------------------
 void turnRight() {
   rightSideBackward();
@@ -447,7 +414,7 @@ void turnRight() {
 }
 
 // -------------------------------------------------------
-// The brake() function stops the robot 
+// The brake subroutine stops the robot 
 // -------------------------------------------------------
 void brake() {
   leftSideBrake();
