@@ -21,10 +21,10 @@ void setup(){
   // Initialize the serial communications
   Serial.begin(9600);
 
-  // Set up the pins for the ultrasonic sensor 
+  // Set up the pins for the ultrasonic sensor
   setupSensorPins();
 
-  // Set up the pins for the motors 
+  // Set up the pins for the motors
   setupMotorPins();
 }
 
@@ -183,22 +183,25 @@ float getDistance() {
   unsigned long clockMax;
   unsigned long timeMax = 60000;
   float distance;
-    
+  
+  // Send a trigger pulse 
   sendTriggerPulse(sensorTrigPin);
 
   // Once triggered it take about 500 usec for the echo pin to go high
   // Set the max wait time
   clockMax = micros() + 1000;
 
+  // Wait for the echo pin to go high 
   waitEchoPinHigh(clockMax, sensorEchoPin);
   
   // Initialise the echo timer
   clockStart = micros();
   clockMax = clockStart + timeMax;
 
+  // Wait for the echo pin to go low 
   waitEchoPinLow(clockMax, sensorEchoPin);
   
-  // Calculate the distance in cm
+  // Calculate the distance in centimeters and return it 
   return calculateDistance(clockStart);
 }
 
@@ -253,35 +256,39 @@ void setupMotorPins() {
 }
 
 // -------------------------------------------------------
-// The enableLeftMotors() function 
+// The enableLeftMotors() function enables the left motors 
 // -------------------------------------------------------
 void enableLeftMotors() {
   digitalWrite(leftEnable, HIGH);
 }
 
 // -------------------------------------------------------
-// The enableRightMotors() function 
+// The enableRightMotors() function enables the right 
+// motors 
 // -------------------------------------------------------
 void enableRightMotors() {
   digitalWrite(rightEnable, HIGH);
 }
 
 // -------------------------------------------------------
-// The disableLeftMotors() function 
+// The disableLeftMotors() function disables the left 
+// motors 
 // -------------------------------------------------------
 void disableLeftMotors() {
   digitalWrite(leftEnable, LOW);
 }
 
 // -------------------------------------------------------
-// The disableRightMotors() function 
+// The disableRightMotors() function disables the right 
+// motors 
 // -------------------------------------------------------
 void disableRightMotors() {
   digitalWrite(rightEnable, LOW);
 }
 
 // -------------------------------------------------------
-// The enableMotors() function 
+// The enableMotors() function enables both the left and 
+// right motors 
 // -------------------------------------------------------
 void enableMotors() {
   enableLeftMotors();
@@ -289,7 +296,8 @@ void enableMotors() {
 }
 
 // -------------------------------------------------------
-// The disableMotors() function 
+// The disableMotors() function disables both the left and 
+// right motors 
 // -------------------------------------------------------
 void disableMotors() {
   disableLeftMotors();
