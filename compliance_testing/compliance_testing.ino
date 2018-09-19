@@ -26,7 +26,7 @@ int sensorEchoPin = 13;
 
 char command = 0;
 
-int pwmDutyCycle = 128;
+int pwmDutyCycle = 255;
 char currentDirection = 's';
 
 // -------------------------------------------------------
