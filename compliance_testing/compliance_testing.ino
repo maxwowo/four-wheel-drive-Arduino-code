@@ -1,3 +1,15 @@
+// =======================================================
+// ENGG1000 - Computing Technical Stream
+// 
+// Motor Controller and Ultrasonic Sensor
+// 
+// Written by Ye Wo z5215628
+// 
+// Controls motors via an ultrasonic sensor and an H 
+// bridge
+// =======================================================
+
+
 // -------------------------------------------------------
 // Global Variables
 // -------------------------------------------------------
