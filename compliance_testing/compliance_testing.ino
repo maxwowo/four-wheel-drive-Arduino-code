@@ -4,6 +4,8 @@
 // Motor Controller and Ultrasonic Sensor
 // 
 // Written by Ye Wo z5215628
+//
+// Using code from lectures / labs 
 // 
 // Controls motors via an ultrasonic sensor and an H 
 // bridge
@@ -13,6 +15,12 @@
 // -------------------------------------------------------
 // Global Variables
 // -------------------------------------------------------
+
+// Define left and right motor pins 
+//
+// Left is defined as the left hand side of the robot in 
+// birds eye view with the front end of the robot facing 
+// upwards 
 int leftEnable = 10;
 int leftLogicPinOne = 9;
 int leftLogicPinTwo = 8;
@@ -21,11 +29,13 @@ int rightEnable = 5;
 int rightLogicPinOne = 7;
 int rightLogicPinTwo = 6;
 
+
+// Define ultrasonic sensor pins 
 int sensorTrigPin = 12;
 int sensorEchoPin = 13;
 
+// Define and initialize command, speed and direction variables 
 char command = 0;
-
 int pwmDutyCycle = 255;
 char currentDirection = 's';
 
