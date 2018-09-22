@@ -63,6 +63,8 @@ void loop(){
   currentDirection = updateDirection(command, currentDirection);
   pwmDutyCycle = updateSpeed(command, pwmDutyCycle);
 
+  // Check for any obstacles in front and change the 
+  // current direction accordingly 
   currentDirection = checkObstacle(currentDirection);
   
   // Small delay for a character to arrive
@@ -304,7 +306,6 @@ float getDistance() {
 // on the right side of the robot 
 // -------------------------------------------------------
 void setupRightMotorPins() {
-
   // Set up the right motor pins
   pinMode(rightEnable, OUTPUT);
   pinMode(rightLogicPinOne, OUTPUT);
@@ -323,7 +324,6 @@ void setupRightMotorPins() {
 // on the left side of the robot 
 // -------------------------------------------------------
 void setupLeftMotorPins() {
-
   // Set up the left motor pins 
   pinMode(leftEnable, OUTPUT);
   pinMode(leftLogicPinOne, OUTPUT);
