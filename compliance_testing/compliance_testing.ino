@@ -28,7 +28,6 @@ int rightEnable = 5;
 int rightLogicPinOne = 7;
 int rightLogicPinTwo = 6;
 
-
 // Define ultrasonic sensor pins 
 int sensorTrigPin = 12;
 int sensorEchoPin = 13;
