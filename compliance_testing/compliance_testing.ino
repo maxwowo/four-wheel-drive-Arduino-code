@@ -16,11 +16,10 @@
 // Global Variables
 // -------------------------------------------------------
 
-// Define left and right motor pins 
-//
-// Left is defined as the left hand side of the robot in 
-// birds eye view with the front end of the robot facing 
-// upwards 
+// IMPORTANT: left is defined as the left hand side of the 
+// robot in birds-eye view with the front of the robot 
+// facing upwards
+
 int leftEnable = 10;
 int leftLogicPinOne = 9;
 int leftLogicPinTwo = 8;

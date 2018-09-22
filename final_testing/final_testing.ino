@@ -1,13 +1,13 @@
 // -------------------------------------------------------
 // Global Variables
 // -------------------------------------------------------
-int leftEnable = 10;
-int leftLogicPinOne = 9;
-int leftLogicPinTwo = 8;
+int leftEnable = 6;
+int leftLogicPinOne = 8;
+int leftLogicPinTwo = 7;
 
 int rightEnable = 5;
-int rightLogicPinOne = 7;
-int rightLogicPinTwo = 6;
+int rightLogicPinOne = 10;
+int rightLogicPinTwo = 9;
 
 int sensorTrigPin = 12;
 int sensorEchoPin = 13;
