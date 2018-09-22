@@ -355,6 +355,12 @@ void setupMotorPins() {
   Serial.println("Initialization complete");
 }
 
+// PinOne | PinTwo | Motor
+//  0     | 0      | Coast
+//  5v    | 0      | Forward
+//  0     | 5v     | Reverse
+//  5v    | 5v     | Brake
+
 // -------------------------------------------------------
 // The leftSideForward subroutine drives the motors on the 
 // left side of the robot forwards
