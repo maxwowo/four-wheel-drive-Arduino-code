@@ -5,19 +5,17 @@
 // 
 // Written by Ye Wo z5215628
 //
-// Using code from lectures / labs 
+// Copied from course notes 
 // 
-// Controls motors via an ultrasonic sensor and an H 
-// bridge
+// Controls motors using a H-bridge 
 // =======================================================
-
 
 // -------------------------------------------------------
 // Global Variables
 // -------------------------------------------------------
 
 // IMPORTANT: left is defined as the left hand side of the 
-// robot in birds-eye view with the front of the robot 
+// robot in bird's-eye view with the ultrasonic sensor
 // facing upwards
 
 int leftEnable = 10;
@@ -32,7 +30,7 @@ int rightLogicPinTwo = 6;
 int sensorTrigPin = 12;
 int sensorEchoPin = 13;
 
-// Define and initialize command, speed and direction variables 
+// Set initial command, speed and direction
 char command = 0;
 int pwmDutyCycle = 255;
 char currentDirection = 's';
@@ -76,12 +74,14 @@ void loop(){
 // any obstacle in front of the robot
 // 
 // If there is an obstacle, s is returned to stop the 
-// robot 
+// robot
+//
+// Otherwise it returns the current direction
 // -------------------------------------------------------
 char checkObstacle(char currentDirection) {
-  // If there is an obstacle in front of the robot that is within 
-  // 20 centimeters to the ultrasonic sensor and the robot is 
-  // currently moving forward 
+  // If there is an obstacle in front of the robot that 
+  // is within 20 centimeters to the ultrasonic sensor
+  // and the robot is currently moving forward 
   if (getDistance() <= 20 && currentDirection == 'f') {
     // Change the current direction to be stopped 
     currentDirection = 's';
