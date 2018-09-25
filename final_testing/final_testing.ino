@@ -1,20 +1,43 @@
+// =======================================================
+// ENGG1000 - Computing Technical Stream
+// 
+// Motor Controller and Ultrasonic Sensor
+// 
+// Written by Ye Wo z5215628
+//
+// Using code from lectures / labs 
+// 
+// Controls motors via an ultrasonic sensor and an H 
+// bridge
+// =======================================================
+
+
 // -------------------------------------------------------
 // Global Variables
 // -------------------------------------------------------
+
+// IMPORTANT: left is defined as the left hand side of the 
+// robot in birds-eye view with the front of the robot 
+// facing upwards
+
 int leftEnable = 6;
-int leftLogicPinOne = 8;
-int leftLogicPinTwo = 7;
+int leftLogicPinOne = A2;
+int leftLogicPinTwo = 3;
 
 int rightEnable = 5;
-int rightLogicPinOne = 10;
+int rightLogicPinOne = 11;
 int rightLogicPinTwo = 9;
 
-int sensorTrigPin = 12;
-int sensorEchoPin = 13;
 
+// Define ultrasonic sensor pins 
+int sensorTrigPin = 10;
+int FrontsensorEchoPin = A5;
+int RightsensorEchoPin = A3;
+int LeftsensorEchoPin= A4;
+
+// Define and initialize command, speed and direction variables 
 char command = 0;
-
-int pwmDutyCycle = 128;
+int pwmDutyCycle = 255;
 char currentDirection = 's';
 
 // -------------------------------------------------------
@@ -197,13 +220,15 @@ void setupSensorPins() {
   // Set up the pins
   pinMode(sensorTrigPin, OUTPUT);
   digitalWrite(sensorTrigPin, LOW);
-  pinMode(sensorEchoPin, INPUT);
+  pinMode(FrontsensorEchoPin, INPUT);
+  pinMode(RightsensorEchoPin, INPUT);
+  pinMode(LeftsensorEchoPin, INPUT);
 
   // Print the pin configuration for wiring
   Serial.print("sensor Trig Pin = ");
   Serial.println(sensorTrigPin);
   Serial.print("sensor Echo Pin = ");
-  Serial.println(sensorEchoPin);
+  Serial.println(FrontsensorEchoPin);
 
   // Initialization completed successfully
   Serial.println("Initialization complete");
@@ -224,18 +249,18 @@ void sendTriggerPulse(int sensorTrigPin) {
 // The waitEchoPinHigh subroutine waits for the echo pin
 // to go high 
 // -------------------------------------------------------
-void waitEchoPinHigh(unsigned long clockMax, int sensorEchoPin) {
+void waitEchoPinHigh(unsigned long clockMax, int FrontsensorEchoPin) {
   // Wait for the echo pin to go high
-  while ((micros() < clockMax) && (digitalRead(sensorEchoPin) == LOW));
+  while ((micros() < clockMax) && (digitalRead(FrontsensorEchoPin) == LOW));
 }
 
 // -------------------------------------------------------
 // The waitEchoPinLow subroutine waits for the echo pin to 
 // go low 
 // -------------------------------------------------------
-void waitEchoPinLow(unsigned long clockMax, int sensorEchoPin) {
+void waitEchoPinLow(unsigned long clockMax, int FrontsensorEchoPin) {
   // Read the sensor delay time by waiting for the echo pin to go low
-  while ((micros() < clockMax) && (digitalRead(sensorEchoPin) == HIGH));
+  while ((micros() < clockMax) && (digitalRead(FrontsensorEchoPin) == HIGH));
 }
 
 // -------------------------------------------------------
@@ -266,14 +291,14 @@ float getDistance() {
   clockMax = micros() + 1000;
 
   // Wait for the echo pin to go high 
-  waitEchoPinHigh(clockMax, sensorEchoPin);
+  waitEchoPinHigh(clockMax, FrontsensorEchoPin);
   
   // Initialise the echo timer
   clockStart = micros();
   clockMax = clockStart + timeMax;
 
   // Wait for the echo pin to go low 
-  waitEchoPinLow(clockMax, sensorEchoPin);
+  waitEchoPinLow(clockMax, FrontsensorEchoPin);
   
   // Calculate the distance in centimeters and return it 
   return calculateDistance(clockStart);
