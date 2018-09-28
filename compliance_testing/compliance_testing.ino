@@ -5,9 +5,11 @@
 // 
 // Written by Ye Wo z5215628
 //
-// Copied from course notes 
+// Some code written with reference to course notes 
 // 
-// Controls motors using a H-bridge 
+// I have placed a border around my code
+// Any code that crosses the border requires a 
+// software interface
 // =======================================================
 
 // -------------------------------------------------------
@@ -17,6 +19,8 @@
 // IMPORTANT: left is defined as the left hand side of the 
 // robot in bird's-eye view with the ultrasonic sensor
 // facing upwards
+
+// -----------------------My Code-----------------------  
 
 int leftEnable = 10;
 int leftLogicPinOne = 9;
@@ -35,24 +39,32 @@ char command = 0;
 int pwmDutyCycle = 255;
 char currentDirection = 's';
 
+// --------------------End of Border--------------------
+
 // -------------------------------------------------------
 // The setup function runs once, when the sketch starts
 // -------------------------------------------------------
 void setup(){ 
-  // Initialize the serial communications
-  Serial.begin(9600);
+  // -----------------------My Code-----------------------   
 
+  // Initialize the serial communications                   
+  Serial.begin(9600);                                 
+                                                         
   // Set up the pins for the ultrasonic sensor
   setupSensorPins();
 
   // Set up the pins for the motors
   setupMotorPins();
+
+  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The loop function runs over and over again
 // -------------------------------------------------------
 void loop(){
+  // -----------------------My Code-----------------------
+
   setMotorSpeed(pwmDutyCycle);
   setMotorDirection(currentDirection);
 
@@ -69,6 +81,8 @@ void loop(){
   
   // Small delay for a character to arrive
   delay(10);
+
+  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
@@ -81,6 +95,8 @@ void loop(){
 // Otherwise it returns the current direction
 // -------------------------------------------------------
 char checkObstacle(char currentDirection) {
+  // -----------------------My Code-----------------------
+
   // If there is an obstacle in front of the robot that 
   // is within 20 centimeters to the ultrasonic sensor
   // and the robot is currently moving forward 
@@ -90,6 +106,8 @@ char checkObstacle(char currentDirection) {
   }
 
   return currentDirection;
+
+  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
@@ -175,6 +193,7 @@ int updateSpeed(char command, int pwmDutyCycle){
 // commands entered 
 // -------------------------------------------------------
 void setMotorDirection(char currentDirection) {
+  // -----------------------My Code-----------------------
 
   // Check which direction is entered in the serial buffer 
   if (currentDirection == 'f') { 
@@ -192,6 +211,8 @@ void setMotorDirection(char currentDirection) {
   else if (currentDirection == 's') {
     brake();
   }   
+
+  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
@@ -347,9 +368,13 @@ void setupMotorPins() {
   Serial.println("Program: Motor Controller Interface"); 
   Serial.println("Initializing ...");
 
+  // -----------------------My Code-----------------------
+
   // Configuration the motor pins
   setupRightMotorPins();
   setupLeftMotorPins();
+
+  // --------------------End of Border--------------------
 
   // Initialization completed successfully
   Serial.println("Initialization complete");
@@ -420,8 +445,12 @@ void leftSideBrake() {
 // forwards
 // -------------------------------------------------------
 void travelForward() {
+  // -----------------------My Code-----------------------
+  
   leftSideForward();
   rightSideForward();
+
+  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
@@ -429,30 +458,46 @@ void travelForward() {
 // backwards 
 // -------------------------------------------------------
 void travelBackward() {
+  // -----------------------My Code-----------------------
+  
   leftSideBackward();
   rightSideBackward();
+
+  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The turnLeft subroutine makes the robot turn left 
 // -------------------------------------------------------
 void turnLeft() {
+  // -----------------------My Code-----------------------
+  
   leftSideBackward();
   rightSideForward();
+
+  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The turnRight subroutine makes the robot turn right 
 // -------------------------------------------------------
 void turnRight() {
+  // -----------------------My Code-----------------------
+  
   rightSideBackward();
   leftSideForward();
+
+  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The brake subroutine stops the robot 
 // -------------------------------------------------------
 void brake() {
+  // -----------------------My Code-----------------------
+  
   leftSideBrake();
   rightSideBrake();
+
+  // --------------------End of Border--------------------
 }
