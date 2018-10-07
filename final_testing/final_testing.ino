@@ -10,11 +10,12 @@ int frontTrigPin = 10;
 int leftTrigPin = 8;
 int rightTrigPin = 7;
 
-int frontSensorEchoPin = A5;
-int rightSensorEchoPin = A3;
-int leftSensorEchoPin= A4;
+int frontEchoPin = A5;
+int rightEchoPin = A3;
+int leftEchoPin= A4;
 
 int pwmDutyCycle = 255;
+int rightDistance, leftDistance, frontDistance;
 
 void setup(){ 
   Serial.begin(9600);
@@ -24,20 +25,25 @@ void setup(){
   setupMotorPins();
 }
 
-void loop(){
+void loop(){  
   setMotorSpeed(pwmDutyCycle);
-  setMotorDirection(currentDirection);
 
-  currentDirection = checkObstacle(currentDirection);
+  rightDistance = getDistance(rightTrigPin);
+  leftDistance = getDistance(leftTrigPin);
+  frontDistance = getDistance(frontTrigPin);
 
-}
-
-char checkObstacle(char currentDirection) {
-  if (getDistance() <= 20 && currentDirection == 'f') {
-    currentDirection = 's';
+  if (frontDistance >= 20) {
+    travelForward();
   }
-
-  return currentDirection;
+  else if (leftDistance >= 20) {
+    turnLeft();
+  }
+  else if (rightDistance >= 20) {
+    turnRight();
+  }
+  else {
+    travelBackward();
+  }
 }
 
 void setMotorSpeed(int pwmDutyCycle) {
@@ -46,24 +52,18 @@ void setMotorSpeed(int pwmDutyCycle) {
 }
 
 void setupSensorPins() {
-  Serial.begin(9600); 
+  pinMode(frontTrigPin, OUTPUT);
+  digitalWrite(frontTrigPin, LOW);
+
+  pinMode(leftTrigPin, OUTPUT);
+  digitalWrite(leftTrigPin, LOW);
+
+  pinMode(rightTrigPin, OUTPUT);
+  digitalWrite(rightTrigPin, LOW);
   
-  Serial.println("-------------------------------------");
-  Serial.println("Program: HC-SR04"); 
-  Serial.println("Initializing ...");
-
-  pinMode(sensorTrigPin, OUTPUT);
-  digitalWrite(sensorTrigPin, LOW);
-  pinMode(frontSensorEchoPin, INPUT);
-  pinMode(rightSensorEchoPin, INPUT);
-  pinMode(leftSensorEchoPin, INPUT);
-
-  Serial.print("sensor Trig Pin = ");
-  Serial.println(sensorTrigPin);
-  Serial.print("sensor Echo Pin = ");
-  Serial.println(frontSensorEchoPin);
-
-  Serial.println("Initialization complete");
+  pinMode(frontEchoPin, INPUT);
+  pinMode(rightEchoPin, INPUT);
+  pinMode(leftEchoPin, INPUT);
 }
 
 void sendTriggerPulse(int sensorTrigPin) {
@@ -72,34 +72,34 @@ void sendTriggerPulse(int sensorTrigPin) {
   digitalWrite(sensorTrigPin, LOW);
 }
 
-void waitEchoPinHigh(unsigned long clockMax, int frontSensorEchoPin) {
-  while ((micros() < clockMax) && (digitalRead(frontSensorEchoPin) == LOW));
+void waitEchoPinHigh(unsigned long clockMax, int pin) {
+  while ((micros() < clockMax) && (digitalRead(pin) == LOW));
 }
 
-void waitEchoPinLow(unsigned long clockMax, int frontSensorEchoPin) {
-  while ((micros() < clockMax) && (digitalRead(frontSensorEchoPin) == HIGH));
+void waitEchoPinLow(unsigned long clockMax, int pin) {
+  while ((micros() < clockMax) && (digitalRead(pin) == HIGH));
 }
 
 float calculateDistance(unsigned long clockStart) {
   return float(micros() - clockStart) / 58.0;
 }
 
-float getDistance() {
+float getDistance(int pin) {
   unsigned long clockStart;
   unsigned long clockMax;
   unsigned long timeMax = 60000;
   float distance;
   
-  sendTriggerPulse(sensorTrigPin);
+  sendTriggerPulse(pin);
 
   clockMax = micros() + 1000;
 
-  waitEchoPinHigh(clockMax, frontSensorEchoPin);
+  waitEchoPinHigh(clockMax, pin);
   
   clockStart = micros();
   clockMax = clockStart + timeMax;
 
-  waitEchoPinLow(clockMax, frontSensorEchoPin);
+  waitEchoPinLow(clockMax, pin);
   
   return calculateDistance(clockStart);
 }
