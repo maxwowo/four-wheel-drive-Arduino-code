@@ -24,6 +24,7 @@ int rightTrigPin = 7;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 long duration, cm, leftcm,durationleft,rightcm,durationright;
  
 void setup() {
@@ -47,6 +48,11 @@ void setup() {
 int frontEchoPin = A5;
 int rightEchoPin = A3;
 int leftEchoPin= A4;
+=======
+int frontSensorEchoPin = A5;
+int rightSensorEchoPin = A3;
+int leftSensorEchoPin= A4;
+>>>>>>> parent of d2886ad... Some updates
 =======
 int frontSensorEchoPin = A5;
 int rightSensorEchoPin = A3;
