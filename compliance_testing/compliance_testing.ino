@@ -5,11 +5,7 @@
 // 
 // Written by Ye Wo z5215628
 //
-// Some code written with reference to course notes 
-// 
-// I have placed a border around my code
-// Any code that crosses the border requires a 
-// software interface
+// Some code copied from course notes 
 // =======================================================
 
 // -------------------------------------------------------
@@ -19,8 +15,6 @@
 // IMPORTANT: left is defined as the left hand side of the 
 // robot in bird's-eye view with the ultrasonic sensor
 // facing upwards
-
-// -----------------------My Code-----------------------  
 
 int leftEnable = 10;
 int leftLogicPinOne = 9;
@@ -39,15 +33,12 @@ char command = 0;
 int pwmDutyCycle = 255;
 char currentDirection = 's';
 
-// --------------------End of Border--------------------
-
 // -------------------------------------------------------
 // The setup function runs once, when the sketch starts
 // -------------------------------------------------------
 void setup(){ 
-  // -----------------------My Code-----------------------   
-
-  // Initialize the serial communications                   
+  // Initialize the serial communications
+  // Requires Arduino software interface             
   Serial.begin(9600);                                 
                                                          
   // Set up the pins for the ultrasonic sensor
@@ -55,16 +46,12 @@ void setup(){
 
   // Set up the pins for the motors
   setupMotorPins();
-
-  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The loop function runs over and over again
 // -------------------------------------------------------
 void loop(){
-  // -----------------------My Code-----------------------
-
   setMotorSpeed(pwmDutyCycle);
   setMotorDirection(currentDirection);
 
@@ -75,39 +62,61 @@ void loop(){
   currentDirection = updateDirection(command, currentDirection);
   pwmDutyCycle = updateSpeed(command, pwmDutyCycle);
 
-  // Check for any obstacles in front and change the 
-  // current direction accordingly 
-  currentDirection = checkObstacle(currentDirection);
+  // Check for any obstacles in front 
+  // If there is, turn left until there is no longer 
+  // an obstacle in front of it
+  checkObstacle(currentDirection);
   
   // Small delay for a character to arrive
+  // Requires Arduino software interface   
   delay(10);
-
-  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The checkObstacle function checks to see if there is 
 // any obstacle in front of the robot
 // 
-// If there is an obstacle, s is returned to stop the 
-// robot
-//
-// Otherwise it returns the current direction
+// If there is an obstacle, the robot will turn left until 
+// there is no longer an obstacle in front of it 
 // -------------------------------------------------------
-char checkObstacle(char currentDirection) {
-  // -----------------------My Code-----------------------
-
-  // If there is an obstacle in front of the robot that 
-  // is within 20 centimeters to the ultrasonic sensor
-  // and the robot is currently moving forward 
+void checkObstacle(char currentDirection) {
+  // Check if
+  // 
+  // 1) there is any obstacle in front of the robot 
+  // that is within 20 centimeters to the ultrasonic 
+  // sensor 
+  // 
+  // 2) the robot is currently moving forward
   if (getDistance() <= 20 && currentDirection == 'f') {
-    // Change the current direction to be stopped 
-    currentDirection = 's';
+    // Turn left for 10000 milliseconds
+    turnLeft();
+
+    // Requires Arduino software interface   
+    delay(10000);
   }
+}
 
-  return currentDirection;
-
-  // --------------------End of Border--------------------
+// -------------------------------------------------------
+// The executeCommand subroutine executes any valid 
+// commands entered 
+// -------------------------------------------------------
+void setMotorDirection(char currentDirection) {
+  // Check which direction is entered in the serial buffer 
+  if (currentDirection == 'f') { 
+    travelForward();
+  }
+  else if (currentDirection == 'b') { 
+    travelBackward();
+  }
+  else if (currentDirection == 'l') { 
+    turnLeft();
+  }
+  else if (currentDirection == 'r') { 
+    turnRight();
+  }
+  else if (currentDirection == 's') {
+    brake();
+  }   
 }
 
 // -------------------------------------------------------
@@ -118,9 +127,11 @@ char receiveCommand(){
   char incomingByte = 0;
 
   // See if there's incoming serial data:
+  // Requires Arduino software interface   
   if (Serial.available() > 0) {
 
-    // Read the oldest byte in the serial buffer:
+    // Read the oldest byte in the serial buffer
+    // Requires Arduino software interface   
     incomingByte = Serial.read();
   }
 
@@ -133,6 +144,7 @@ char receiveCommand(){
 // -------------------------------------------------------
 char updateDirection(char command, char currentDirection){
   // Is this a direction; 'f' 'b' 'l' 'r' 's'
+  // Requires Arduino software interface   
   if (command == 'f') {
     Serial.println("Forwards");
     currentDirection = 'f';
@@ -164,6 +176,7 @@ char updateDirection(char command, char currentDirection){
 int updateSpeed(char command, int pwmDutyCycle){
   
   // Is this a motor speed 0 - 4
+  // Requires Arduino software interface   
   if (command == '0') {
     Serial.println("Speed = 0%");
     pwmDutyCycle = 0;
@@ -189,33 +202,6 @@ int updateSpeed(char command, int pwmDutyCycle){
 }
 
 // -------------------------------------------------------
-// The executeCommand subroutine executes any valid 
-// commands entered 
-// -------------------------------------------------------
-void setMotorDirection(char currentDirection) {
-  // -----------------------My Code-----------------------
-
-  // Check which direction is entered in the serial buffer 
-  if (currentDirection == 'f') { 
-    travelForward();
-  }
-  else if (currentDirection == 'b') { 
-    travelBackward();
-  }
-  else if (currentDirection == 'l') { 
-    turnLeft();
-  }
-  else if (currentDirection == 'r') { 
-    turnRight();
-  }
-  else if (currentDirection == 's') {
-    brake();
-  }   
-
-  // --------------------End of Border--------------------
-}
-
-// -------------------------------------------------------
 // The setMotorSpeed subroutine sets the speed of the 
 // left and right motors 
 // -------------------------------------------------------
@@ -227,6 +213,8 @@ void setMotorSpeed(int pwmDutyCycle) {
 // -------------------------------------------------------
 // The setupSensorPins subroutine sets up the pins for the 
 // ultrasonic sensor 
+//
+// Requires Arduino software interface   
 // -------------------------------------------------------
 void setupSensorPins() {
   // Initialize the serial communications
@@ -255,6 +243,8 @@ void setupSensorPins() {
 // -------------------------------------------------------
 // The sendTriggerPulse subroutine sends a trigger pulse 
 // using the ultrasonic sensor 
+//
+// Requires Arduino software interface   
 // -------------------------------------------------------
 void sendTriggerPulse(int sensorTrigPin) {
   // Send the 10 usec trigger pulse
@@ -266,6 +256,8 @@ void sendTriggerPulse(int sensorTrigPin) {
 // -------------------------------------------------------
 // The waitEchoPinHigh subroutine waits for the echo pin
 // to go high 
+//
+// Requires Arduino software interface   
 // -------------------------------------------------------
 void waitEchoPinHigh(unsigned long clockMax, int sensorEchoPin) {
   // Wait for the echo pin to go high
@@ -275,6 +267,8 @@ void waitEchoPinHigh(unsigned long clockMax, int sensorEchoPin) {
 // -------------------------------------------------------
 // The waitEchoPinLow subroutine waits for the echo pin to 
 // go low 
+//
+// Requires Arduino software interface   
 // -------------------------------------------------------
 void waitEchoPinLow(unsigned long clockMax, int sensorEchoPin) {
   // Read the sensor delay time by waiting for the echo pin to go low
@@ -285,6 +279,8 @@ void waitEchoPinLow(unsigned long clockMax, int sensorEchoPin) {
 // The calculateDistance function calculates and 
 // returns the distance between the ultrasonic sensor and 
 // any solid object in front using maths 
+//
+// Requires Arduino software interface   
 // -------------------------------------------------------
 float calculateDistance(unsigned long clockStart) {
   return float(micros() - clockStart) / 58.0;
@@ -306,6 +302,7 @@ float getDistance() {
 
   // Once triggered it take about 500 usec for the echo pin to go high
   // Set the max wait time
+  // Requires Arduino software interface   
   clockMax = micros() + 1000;
 
   // Wait for the echo pin to go high 
@@ -325,6 +322,8 @@ float getDistance() {
 // -------------------------------------------------------
 // The setupRightMotorPins subroutine sets up the motors 
 // on the right side of the robot 
+//
+// Requires Arduino software interface   
 // -------------------------------------------------------
 void setupRightMotorPins() {
   // Set up the right motor pins
@@ -343,6 +342,8 @@ void setupRightMotorPins() {
 // -------------------------------------------------------
 // The setupLeftMotorPins subroutine sets up the motors 
 // on the left side of the robot 
+//
+// Requires Arduino software interface   
 // -------------------------------------------------------
 void setupLeftMotorPins() {
   // Set up the left motor pins 
@@ -364,19 +365,17 @@ void setupLeftMotorPins() {
 // -------------------------------------------------------
 void setupMotorPins() {
   // Print the program details
+  // Requires Arduino software interface   
   Serial.println("-------------------------------------");
   Serial.println("Program: Motor Controller Interface"); 
   Serial.println("Initializing ...");
-
-  // -----------------------My Code-----------------------
 
   // Configuration the motor pins
   setupRightMotorPins();
   setupLeftMotorPins();
 
-  // --------------------End of Border--------------------
-
   // Initialization completed successfully
+  // Requires Arduino software interface   
   Serial.println("Initialization complete");
 }
 
@@ -444,13 +443,9 @@ void leftSideBrake() {
 // The travelForward subroutine makes the robot go 
 // forwards
 // -------------------------------------------------------
-void travelForward() {
-  // -----------------------My Code-----------------------
-  
+void travelForward() {  
   leftSideForward();
   rightSideForward();
-
-  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
@@ -458,46 +453,30 @@ void travelForward() {
 // backwards 
 // -------------------------------------------------------
 void travelBackward() {
-  // -----------------------My Code-----------------------
-  
   leftSideBackward();
   rightSideBackward();
-
-  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The turnLeft subroutine makes the robot turn left 
 // -------------------------------------------------------
 void turnLeft() {
-  // -----------------------My Code-----------------------
-  
   leftSideBackward();
   rightSideForward();
-
-  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The turnRight subroutine makes the robot turn right 
 // -------------------------------------------------------
 void turnRight() {
-  // -----------------------My Code-----------------------
-  
   rightSideBackward();
   leftSideForward();
-
-  // --------------------End of Border--------------------
 }
 
 // -------------------------------------------------------
 // The brake subroutine stops the robot 
 // -------------------------------------------------------
 void brake() {
-  // -----------------------My Code-----------------------
-  
   leftSideBrake();
   rightSideBrake();
-
-  // --------------------End of Border--------------------
 }
