@@ -31,7 +31,7 @@ int sensorEchoPin = 13;
 // Set initial command, speed and direction
 char command = 0;
 int pwmDutyCycle = 255;
-char currentDirection = 's';
+char currentDirection = 'f';
 
 // -------------------------------------------------------
 // The setup function runs once, when the sketch starts

@@ -31,23 +31,33 @@ void loop(){
   readDistance();
 
   if (frontDistance >= 20) {
-    travelForward();
-  }
-  else if (leftDistance >= 20) {
-    turnLeft();
-  }
-  else if (rightDistance >= 20) {
-    turnRight();
+      turnLeft();
+      delay(40);
+      readDistance();
+
+      if (frontDistance >= 20) {
+          turnRight();
+          delay(80);
+          readDistance();
+
+          if (frontDistance >= 20) {
+              turnLeft();
+              delay(40);
+
+              travelForward();
+              delay(5000);
+          }
+      }
   }
   else {
-    travelBackward();
+      turnLeft();
   }
 }
 
 void readDistance() {
-  rightDistance = getDistance(rightTrigPin);
-  leftDistance = getDistance(leftTrigPin);
-  frontDistance = getDistance(frontTrigPin);
+  rightDistance = getDistance(rightTrigPin, rightEchoPin);
+  leftDistance = getDistance(leftTrigPin, leftEchoPin);
+  frontDistance = getDistance(frontTrigPin, frontEchoPin);
 }
 
 void setMotorSpeed(int pwmDutyCycle) {
@@ -88,22 +98,22 @@ float calculateDistance(unsigned long clockStart) {
   return float(micros() - clockStart) / 58.0;
 }
 
-float getDistance(int pin) {
+float getDistance(int trigPin, int echoPin) {
   unsigned long clockStart;
   unsigned long clockMax;
   unsigned long timeMax = 60000;
   float distance;
   
-  sendTriggerPulse(pin);
+  sendTriggerPulse(trigPin);
 
   clockMax = micros() + 1000;
 
-  waitEchoPinHigh(clockMax, pin);
+  waitEchoPinHigh(clockMax, echoPin);
   
   clockStart = micros();
   clockMax = clockStart + timeMax;
 
-  waitEchoPinLow(clockMax, pin);
+  waitEchoPinLow(clockMax, echoPin);
   
   return calculateDistance(clockStart);
 }
