@@ -28,16 +28,20 @@ void loop(){
   setMotorSpeed(pwmDutyCycle);
 
   travelForward();
-  delay(5000);
+  delay(2000);
+
+  while (true) {
+    brake();
+  }
   
-  travelBackward();
-  delay(1000);
-
-  turnLeft();
-  delay(1000);
-
-  travelForward();
-  delay(5000);
+//  travelBackward();
+//  delay(500);
+//
+//  turnLeft();
+//  delay(1500);
+//
+//  travelForward();
+//  delay(5000);
 }
 
 void setMotorSpeed(int pwmDutyCycle) {

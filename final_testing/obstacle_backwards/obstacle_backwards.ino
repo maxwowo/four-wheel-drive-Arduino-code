@@ -14,22 +14,25 @@ int frontEchoPin = A5;
 int rightEchoPin = A3;
 int leftEchoPin= A4;
 
-int pwmDutyCycle = 255;
+int pwmDutyCycle = 170;
 
 void setup(){ 
   Serial.begin(9600);
 
   setupMotorPins();
 
-  delay(2000);
+  delay(4000);
 }
 
 void loop(){  
   setMotorSpeed(pwmDutyCycle);
-  travelForward();
-  delay(200);
-  turnLeft();
-  delay(16);
+
+  travelBackward();
+  delay(3000);
+
+  while (true) {
+      brake();
+  }
 }
 
 void setMotorSpeed(int pwmDutyCycle) {

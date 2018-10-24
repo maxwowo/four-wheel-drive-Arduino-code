@@ -17,10 +17,13 @@ int leftEchoPin= A4;
 int pwmDutyCycle = 255;
 int rightDistance, leftDistance, frontDistance;
 
-int distanceThreshold = 20;
+int distanceThreshold = 10;
+int leftRightThreshold = 15;
 
-int rightTurnDelay = 350;
-int leftTurnDelay = 400;
+int rightTurnDelay = 100;
+int leftTurnDelay = 100;
+
+int slightDelay = 150;
 
 void setup(){ 
   Serial.begin(9600);
@@ -28,6 +31,8 @@ void setup(){
   setupSensorPins();
 
   setupMotorPins();
+
+  delayMicroseconds(4000);
 }
 
 void loop(){  
@@ -35,26 +40,35 @@ void loop(){
 
   readDistance();
 
-  if (frontDistance > distanceThreshold) {
+  if (rightDistance > leftDistance) {
+    turnRight();
+    delay(rightTurnDelay);
+    readDistance();
+    if (frontDistance > distanceThreshold) {
       travelForward();
-      delay(500);
-      turnLeft();
-      delay(50);
-      
-      brake();
-      delay(500);
-  }
-  else if (leftDistance > rightDistance && leftDistance > distanceThreshold) {
-      turnLeft();
-      delay(leftTurnDelay);
-  }
-  else if (rightDistance >= leftDistance && rightDistance > distanceThreshold) {
-      turnRight();
-      delay(rightTurnDelay);
-  }
-  else {
-      turnRight();
+      delay(slightDelay);
+    }
+    else {
+      travelBackward();
       delay(2 * rightTurnDelay);
+      turnRight();
+      delay(8 * rightTurnDelay);
+    }
+  }
+  else if (leftDistance >= rightDistance) {
+    turnLeft();
+    delay(leftTurnDelay); 
+    readDistance();  
+    if (frontDistance > distanceThreshold) {
+      travelForward();
+      delay(slightDelay);
+    }
+    else {
+      travelBackward();
+      delay(2 * rightTurnDelay);
+      turnLeft();
+      delay(8 * leftTurnDelay);
+    }
   }
 }
 

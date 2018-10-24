@@ -15,26 +15,115 @@ int rightEchoPin = A3;
 int leftEchoPin= A4;
 
 int pwmDutyCycle = 255;
+int rightDistance, leftDistance, frontDistance;
+
+int distanceThreshold = 10;
+int leftRightThreshold = 10;
+
+int rightTurnDelay = 100;
+int leftTurnDelay = 100;
+
+int slightDelay = 100;
 
 void setup(){ 
   Serial.begin(9600);
 
+  setupSensorPins();
+
   setupMotorPins();
 
-  delay(2000);
+  delayMicroseconds(4000);
 }
 
 void loop(){  
   setMotorSpeed(pwmDutyCycle);
-  travelForward();
-  delay(200);
-  turnLeft();
-  delay(16);
+
+  readDistance();
+
+  if (frontDistance < distanceThreshold && leftDistance < leftRightThreshold) {
+      turnRight();
+      delay(400);
+  }
+  else if (leftDistance < distanceThreshold) {
+      turnRight();
+      delay(rightTurnDelay);
+      if (frontDistance > distanceThreshold) {
+          travelForward();
+          delay(slightDelay);
+      }
+  }
+  else if (leftDistance >= distanceThreshold) {
+      turnLeft();
+      delay(leftTurnDelay);
+      if (frontDistance > distanceThreshold) {
+          travelForward();
+          delay(slightDelay);
+      }
+  }
+}
+
+void readDistance() {
+  rightDistance = getDistance(rightTrigPin, rightEchoPin);
+  leftDistance = getDistance(leftTrigPin, leftEchoPin);
+  frontDistance = getDistance(frontTrigPin, frontEchoPin);
 }
 
 void setMotorSpeed(int pwmDutyCycle) {
   analogWrite(leftEnable, pwmDutyCycle);
   analogWrite(rightEnable, pwmDutyCycle);
+}
+
+void setupSensorPins() {
+  pinMode(frontTrigPin, OUTPUT);
+  digitalWrite(frontTrigPin, LOW);
+
+  pinMode(leftTrigPin, OUTPUT);
+  digitalWrite(leftTrigPin, LOW);
+
+  pinMode(rightTrigPin, OUTPUT);
+  digitalWrite(rightTrigPin, LOW);
+  
+  pinMode(frontEchoPin, INPUT);
+  pinMode(rightEchoPin, INPUT);
+  pinMode(leftEchoPin, INPUT);
+}
+
+void sendTriggerPulse(int sensorTrigPin) {
+  digitalWrite(sensorTrigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(sensorTrigPin, LOW);
+}
+
+void waitEchoPinHigh(unsigned long clockMax, int pin) {
+  while ((micros() < clockMax) && (digitalRead(pin) == LOW));
+}
+
+void waitEchoPinLow(unsigned long clockMax, int pin) {
+  while ((micros() < clockMax) && (digitalRead(pin) == HIGH));
+}
+
+float calculateDistance(unsigned long clockStart) {
+  return float(micros() - clockStart) / 58.0;
+}
+
+float getDistance(int trigPin, int echoPin) {
+  unsigned long clockStart;
+  unsigned long clockMax;
+  unsigned long timeMax = 60000;
+  float distance;
+  
+  sendTriggerPulse(trigPin);
+
+  clockMax = micros() + 1000;
+
+  waitEchoPinHigh(clockMax, echoPin);
+  
+  clockStart = micros();
+  clockMax = clockStart + timeMax;
+
+  waitEchoPinLow(clockMax, echoPin);
+  
+  return calculateDistance(clockStart);
 }
 
 void setupRightMotorPins() {
